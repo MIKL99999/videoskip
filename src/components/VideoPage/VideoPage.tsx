@@ -86,8 +86,8 @@ const VideoPage: FC = () => {
     }
   }, [handleNewRequest, username]);
 
-  const redirectToLogin = useCallback(() => {
-    history.push(ROUTES.LOGIN);
+  const redirectToLogin = useCallback((errorMessage: string) => {
+    history.push(ROUTES.LOGIN, { errorMessage });
     removeCoockie('jwtToken');
   }, []);
 
@@ -121,7 +121,7 @@ const VideoPage: FC = () => {
   }, [username]);
 
   if (isLoading) {
-    return <LoadingPage helpText="Загрузка... (пока что возможна долгая загрузка, в будущем оптимизирую это дело) Если не загружается убедитесь, что у вас доступны поинты на канале и удалите награду <заказ видео>, затем обновите страницу" />;
+    return <LoadingPage helpText="Загрузка..." />;
   }
 
   return (

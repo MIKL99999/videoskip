@@ -1,7 +1,8 @@
 import { createBrowserHistory } from 'history';
 
-interface LocationState {
+export interface LocationState {
   forcePush?: boolean;
+  errorMessage?: string;
 }
 
 const history = createBrowserHistory<LocationState>();

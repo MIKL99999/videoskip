@@ -1,0 +1,38 @@
+@import "../../styles/colors";
+
+.login-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+
+  &-content {
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+    border: 1px solid $grey-7;
+    max-width: 40vw;
+  }
+
+  &-error {
+    color: $red-3 !important;
+    font-size: 1.1rem !important;
+    align-self: center;
+  }
+
+  &-divider {
+    background-color: $grey-7 !important;
+    margin: 10px 0 !important;
+  }
+
+  .twitch-login-button {
+    background-color: #9146FF !important;
+    color: #F1F1F1 !important;
+
+    &:hover {
+      background-color: #733ac6 !important;
+    }
+  }
+}

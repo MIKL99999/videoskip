@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Redirect, useLocation } from 'react-router';
+import { Redirect, useHistory, useLocation } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { getQueryValue } from '../../utils/url.utils';
 import ROUTES from '../../constants/routes.constants';
@@ -10,6 +10,7 @@ import LoadingPage from '../LoadingPage/LoadingPage';
 const TwitchRedirect: React.FC = () => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const history = useHistory();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [loadingMessage] = useState<string>('Авторизация...');
 
@@ -19,8 +20,10 @@ const TwitchRedirect: React.FC = () => {
       authenticateTwitch(code).then(() => {
         setIsLoading(false);
       });
+    } else {
+      history.push(ROUTES.LOGIN);
     }
-  }, [dispatch, location]);
+  }, [dispatch, history, location]);
 
   return isLoading ? <LoadingPage helpText={loadingMessage} /> : <Redirect to={ROUTES.VIDEO_SKIP} />;
 };

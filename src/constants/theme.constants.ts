@@ -50,6 +50,9 @@ export const theme = createMuiTheme({
       fontSize: 16,
       marginBottom: 13,
     },
+    body1: {
+      color: '#d2d2d2',
+    },
     fontFamily: ['Helvetica Neue', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'].join(','),
   },
   overrides: {
