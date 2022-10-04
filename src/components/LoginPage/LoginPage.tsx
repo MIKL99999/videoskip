@@ -8,7 +8,7 @@ import { LocationState } from '../../constants/history';
 const commonScope = 'channel:read:redemptions channel:manage:redemptions';
 
 const getAuthParams = (extraScope?: string) => ({
-  client_id: '83xjs5k4yvqo0yn2cxu1v5lan2eeam',
+  client_id: '75rqv1jdoyvwyes1rlw6dcsx9pidbr',
   redirect_uri: `${window.location.origin}/twitch/redirect`,
   response_type: 'code',
   scope: extraScope ? `${commonScope} ${extraScope}` : commonScope,
