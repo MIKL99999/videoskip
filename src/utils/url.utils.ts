@@ -18,6 +18,11 @@ export const getWebsocketUrl = (): string =>
     ? `wss://backend-old.onrender.com?jwtToken=${getCookie('jwtToken')}&isVideoRequest=true`
     : `ws://localhost:8000?jwtToken=${getCookie('jwtToken')}&isVideoRequest=true`;
 
+export const getSocketIOUrl = (): string =>
+  isProduction()
+    ? `https://backend-old.onrender.com/skipExtension`
+    : `http://localhost:8000/skipExtension`;
+
 export const parseYoutubeUrl = (url: string): string | null => {
   const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
   const match = url.match(regExp);

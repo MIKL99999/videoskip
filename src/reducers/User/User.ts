@@ -28,9 +28,12 @@ const userSlice = createSlice({
     setSkipRewardId(state, action: PayloadAction<string | null>): void {
       state.skipRewardId = action.payload;
     },
+    setUserState(state, action: PayloadAction<UserState>): void {
+      Object.assign(state, action.payload)
+    }
   },
 });
 
-export const { setUsername, setUserId, setSkipRewardId } = userSlice.actions;
+export const { setUsername, setUserId, setSkipRewardId, setUserState } = userSlice.actions;
 
 export default userSlice.reducer;

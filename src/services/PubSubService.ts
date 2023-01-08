@@ -1,4 +1,3 @@
-import { refreshToken } from '../api/userApi';
 import { RedemptionMessage } from '../models/purchase';
 import { store } from '../index';
 import { setUserId } from '../reducers/User/User';
@@ -53,6 +52,8 @@ export class TwitchPubSubService {
   }
 
   listen = async (channelId: string, accessToken: string, topic = TWITCH_TOPICS.REDEMPTIONS): Promise<void> => {
+    // console.log(`listen ${topic}.${channelId}`);
+
     if (!this.ws) {
       await this.connect();
     }
@@ -64,7 +65,7 @@ export class TwitchPubSubService {
   };
 
   unlisten = (channelId: string, accessToken: string, topic = TWITCH_TOPICS.REDEMPTIONS): void => {
-    console.log(`unlisten ${topic}.${channelId}`);
+    // console.log(`unlisten ${topic}.${channelId}`);
 
     this.sendMessage(REQUEST_MESSAGE_TYPE.UNLISTEN, {
       topics: [`${topic}.${channelId}`],
@@ -98,14 +99,14 @@ export class TwitchPubSubService {
     if (this.pingHandle) {
       clearInterval(this.pingHandle);
     }
-    console.log('Twitch PubSub connection closed');
+    // console.log('Twitch PubSub connection closed');
     reject();
   };
 
   receiveMessage = (event: any): void => {
     const twitchPubSubMessage = JSON.parse(event.data);
     const { data } = twitchPubSubMessage;
-    console.log(`[PubSub Response Type] ${twitchPubSubMessage.type}`);
+    // console.log(`[PubSub Response Type] ${twitchPubSubMessage.type}`);
 
     if (twitchPubSubMessage.error === MESSAGE_ERRORS.BAD_AUTH) {
       console.log('BAD_AUTH');
@@ -133,7 +134,7 @@ export class TwitchPubSubService {
       case 'RESPONSE':
         // Not implemented
         // @TODO implement
-        this.handleResponse(twitchPubSubMessage);
+        this.handleResponse();
         break;
 
       case 'MESSAGE':
@@ -145,8 +146,8 @@ export class TwitchPubSubService {
     }
   };
 
-  handleResponse = (message: any): void => {
-    console.log('Response message:', message);
+  handleResponse = (): void => {
+    // console.log('Response message:', message);
   };
 
   handleMessage = (topic: string, message: any): void => {
@@ -162,13 +163,13 @@ export class TwitchPubSubService {
   };
 }
 
-export const updateConnection = async (twitchPubSubService: TwitchPubSubService, username: string): Promise<void> => {
-  const { access_token, channelId } = await refreshToken(username);
-
+export const updateConnection = async (
+  twitchPubSubService: TwitchPubSubService,
+  accessToken: string,
+  channelId: string,
+): Promise<void> => {
   store.dispatch(setUserId(channelId));
 
-  twitchPubSubService.unlisten(channelId, access_token);
-  await twitchPubSubService.listen(channelId, access_token);
-
-  console.log('reconnect success');
+  twitchPubSubService.unlisten(channelId, accessToken);
+  await twitchPubSubService.listen(channelId, accessToken);
 };

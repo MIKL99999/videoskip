@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './App.scss';
 import { createStyles, makeStyles, MuiThemeProvider } from '@material-ui/core/styles';
 import { Route, Switch } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import ROUTES from '../../constants/routes.constants';
 import { theme } from '../../constants/theme.constants';
 import AlertsContainer from '../AlertsContainer/AlertsContainer';
@@ -10,7 +9,7 @@ import VideoPage from '../VideoPage/VideoPage';
 import TwitchRedirect from '../TwitchRedirect/TwitchRedirect';
 import LoginPage from '../LoginPage/LoginPage';
 import PrivateRoute from '../PrivateRoute/PrivateRoute';
-import { connectToServer } from '../../reducers/PubSubSocket/PubSubSocket';
+import { Redirect } from "react-router";
 
 const drawerWidth = 240;
 
@@ -57,11 +56,6 @@ const useStyles = makeStyles(() =>
 
 const App: React.FC = () => {
   const classes = useStyles();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(connectToServer);
-  }, [dispatch]);
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -77,6 +71,9 @@ const App: React.FC = () => {
             </Route>
             <Route exact path={ROUTES.LOGIN}>
               <LoginPage />
+            </Route>
+            <Route path='/'>
+              <Redirect to={ROUTES.LOGIN} />
             </Route>
           </Switch>
         </main>

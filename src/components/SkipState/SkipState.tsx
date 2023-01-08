@@ -16,9 +16,10 @@ interface SkipStateProps {
   toNextVideo: () => void;
   currentVideo?: VideoRequest;
   videos: VideoRequest[];
+  token: string | null;
 }
 
-const SkipState: FC<SkipStateProps> = ({ toNextVideo, currentVideo, videos }) => {
+const SkipState: FC<SkipStateProps> = ({ toNextVideo, currentVideo, videos, token }) => {
   const { username } = useSelector((root: RootState) => root.user);
   const { webSocket } = useSelector((root: RootState) => root.pubSubSocket);
   const [skips, setSkips] = useState<number>(0);
@@ -174,7 +175,7 @@ const SkipState: FC<SkipStateProps> = ({ toNextVideo, currentVideo, videos }) =>
           label="автоскип"
       />
       </div>
-      <EmoteSelect title="сейв" setEmote={handleSafeEmoteChange} defaultEmote={skipEmotes.safe} />
+      <EmoteSelect title="сейв" setEmote={handleSafeEmoteChange} defaultEmote={skipEmotes.safe} token={token} />
       <div className="skip-slice-container">
         <LinearProgress className="skip-progress" variant="determinate" value={progress} color={currentColor} />
         <div className="skips-count">
@@ -182,7 +183,7 @@ const SkipState: FC<SkipStateProps> = ({ toNextVideo, currentVideo, videos }) =>
           <Input className="max-skips-input" onBlur={handleMaxSkipsChange} defaultValue={maxSkips} />
         </div>
       </div>
-      <EmoteSelect title="скип" setEmote={handleSkipEmoteChange} defaultEmote={skipEmotes.skip} />
+      <EmoteSelect title="скип" setEmote={handleSkipEmoteChange} defaultEmote={skipEmotes.skip} token={token} />
       <Button variant="contained" color={currentColor} onClick={skipVideo} className="skip-button">
         Скип
       </Button>

@@ -8,10 +8,11 @@ import { EmoteData } from '../../models/common.model';
 interface EmoteSelectProps {
   title: string;
   setEmote: (emote: EmoteData) => void;
+  token: string | null;
   defaultEmote?: EmoteData;
 }
 
-const EmoteSelect: FC<EmoteSelectProps> = ({ title, setEmote, defaultEmote }) => {
+const EmoteSelect: FC<EmoteSelectProps> = ({ title, setEmote, defaultEmote, token }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [selectedEmote, setSelectedEmote] = useState<string>();
   const anchorEl = useRef<HTMLButtonElement>(null);
@@ -37,7 +38,7 @@ const EmoteSelect: FC<EmoteSelectProps> = ({ title, setEmote, defaultEmote }) =>
   return (
     <>
       <Popper open={open} anchorEl={anchorEl.current}>
-        <TwitchEmotesList setActiveEmote={handleEmoteSelect} />
+        <TwitchEmotesList setActiveEmote={handleEmoteSelect} token={token} />
       </Popper>
       <button className="emote-select" ref={anchorEl} onClick={toggleEmotePicker} type="button" style={containerStyles}>
         {!selectedEmote && <EditOutlinedIcon />}

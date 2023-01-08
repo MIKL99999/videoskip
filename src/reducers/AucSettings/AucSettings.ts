@@ -2,7 +2,7 @@ import { createSlice, PayloadAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { Action } from 'redux';
 import mergewith from 'lodash.mergewith';
 import { getUserData } from '../../api/userApi';
-import { setSkipRewardId, setUserId, setUsername } from '../User/User';
+import { setUserState } from '../User/User';
 
 export interface SettingFields {
   startTime?: number;
@@ -99,9 +99,7 @@ export const loadUserData =
     try {
       const { username, userId, skipRewardId } = await getUserData();
 
-      dispatch(setUsername(username));
-      dispatch(setUserId(userId));
-      dispatch(setSkipRewardId(skipRewardId));
+      dispatch(setUserState({ username, userId, skipRewardId }))
     } catch (e) {
       handleError(e.response?.data?.message);
     }

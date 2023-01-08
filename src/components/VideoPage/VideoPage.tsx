@@ -17,15 +17,24 @@ import { loadUserData } from '../../reducers/AucSettings/AucSettings';
 import history from '../../constants/history';
 import ROUTES from '../../constants/routes.constants';
 import { removeCoockie } from '../../utils/common.utils';
+import {refreshToken} from "../../api/userApi";
 
 const YOUTUBE_API_KEY = 'AIzaSyCVPinFlGHMn0uzeWFjNTA38QOZBejOlSs';
 
 const VideoPage: FC = () => {
   const dispatch = useDispatch();
   const { username, skipRewardId } = useSelector((root: RootState) => root.user);
+  // const { socket } = useSelector((root: RootState) => root.socketIO);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [requestQueue, setRequestQueue] = useState<VideoRequest[]>([]);
   const currentVideo = useMemo(() => requestQueue[0] || null, [requestQueue]);
+  const [token, setToken] = useState<string | null>(null)
+
+  // useEffect(() => {
+  //   if (userId && !socket) {
+  //     dispatch(connectToSocketServer())
+  //   }
+  // }, [userId, socket])
 
   const getVideoInfo = useCallback(async (id): Promise<VideoData> => {
     const { data } = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
@@ -80,8 +89,11 @@ const VideoPage: FC = () => {
     if (username) {
       const twitchPubSubService = new TwitchPubSubService(handleNewRequest);
 
-      await updateConnection(twitchPubSubService, username);
+      const { access_token, channelId } = await refreshToken(username);
 
+      await updateConnection(twitchPubSubService, access_token, channelId);
+
+      setToken(access_token)
       setIsLoading(false);
     }
   }, [handleNewRequest, username]);
@@ -128,7 +140,7 @@ const VideoPage: FC = () => {
     <div className="page-container">
       <div className="video-container">
         <VideoPlayer id={currentVideo?.videoId} />
-        <SkipState toNextVideo={toNextVideo} currentVideo={currentVideo} videos={requestQueue} />
+        <SkipState toNextVideo={toNextVideo} currentVideo={currentVideo} videos={requestQueue} token={token} />
       </div>
       <RequestsList requestQueue={requestQueue} onLoadMore={handleLoadMore} />
       <div className="extra">created by Kozjar</div>
