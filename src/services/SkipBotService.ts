@@ -79,11 +79,11 @@ export class SkipBotService {
   };
 
   handleVote = (vote: Vote, onUpdate?: (vote: Vote) => void): void => {
-    const { username, command } = vote;
+    const {  command, id } = vote;
     const mapValue = command === VoteCommand.Skip ? 1 : -1;
 
-    if (this.skipMap.get(username) !== mapValue) {
-      this.skipMap.set(username, mapValue);
+    if (this.skipMap.get(id) !== mapValue) {
+      this.skipMap.set(id, mapValue);
       this.updateSkipCount();
       onUpdate && onUpdate(vote);
     }
@@ -95,16 +95,17 @@ export class SkipBotService {
 
       return;
     }
+    const {['user-id']: id = '', ['display-name']: username = ''} = tags
 
     if (tags['display-name'] === this.ignoreUser) {
       return;
     }
     if (message.startsWith(this.skipCommand)) {
-      this.handleVote({ username: tags['display-name'] || '', command: VoteCommand.Skip });
+      this.handleVote({ username, id, command: VoteCommand.Skip });
     }
 
     if (message.startsWith(this.safeCommand)) {
-      this.handleVote({ username: tags['display-name'] || '', command: VoteCommand.Safe });
+      this.handleVote({ username, id, command: VoteCommand.Safe });
     }
   };
 }

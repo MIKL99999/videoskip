@@ -71,7 +71,7 @@ const TwitchEmotesList: FC<TwitchEmotesListProps> = ({ setActiveEmote, token }) 
 
   useEffect(() => {
     if (userId) {
-      const get7TVEmotes = async () => sevenTVApi.fetchUserEmotes(username || '').then((emotes: any) => emotes.map(createSevenTVEmote))
+      const get7TVEmotes = async () => sevenTVApi.fetchUserEmotes(username || '').then((emotes: any) => emotes.map(createSevenTVEmote)).catch(() => undefined)
 
       Promise.all([
         (async () => ({ id: 'Twitch_Global', collection: token ? await getTwitchGlobalEmotes(token) : undefined }))(),

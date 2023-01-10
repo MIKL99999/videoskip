@@ -18,23 +18,24 @@ import history from '../../constants/history';
 import ROUTES from '../../constants/routes.constants';
 import { removeCoockie } from '../../utils/common.utils';
 import {refreshToken} from "../../api/userApi";
+import { connectToSocketServer } from '../../reducers/socketIO/socketIO';
 
 const YOUTUBE_API_KEY = 'AIzaSyCVPinFlGHMn0uzeWFjNTA38QOZBejOlSs';
 
 const VideoPage: FC = () => {
   const dispatch = useDispatch();
-  const { username, skipRewardId } = useSelector((root: RootState) => root.user);
-  // const { socket } = useSelector((root: RootState) => root.socketIO);
+  const { username, skipRewardId, userId } = useSelector((root: RootState) => root.user);
+  const { socket } = useSelector((root: RootState) => root.socketIO);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [requestQueue, setRequestQueue] = useState<VideoRequest[]>([]);
   const currentVideo = useMemo(() => requestQueue[0] || null, [requestQueue]);
   const [token, setToken] = useState<string | null>(null)
 
-  // useEffect(() => {
-  //   if (userId && !socket) {
-  //     dispatch(connectToSocketServer())
-  //   }
-  // }, [userId, socket])
+  useEffect(() => {
+    if (userId && !socket) {
+      dispatch(connectToSocketServer())
+    }
+  }, [userId, socket])
 
   const getVideoInfo = useCallback(async (id): Promise<VideoData> => {
     const { data } = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
@@ -54,22 +55,26 @@ const VideoPage: FC = () => {
 
   const parseRedemption = useCallback(
     async ({ user, reward: { id: rewardId }, user_input, user_name, id }: Redemption): Promise<VideoRequest | null> => {
-      const videoId = parseYoutubeUrl(user_input);
-      const name = user ? user.display_name : user_name;
-
-      if (videoId && rewardId === skipRewardId) {
+      if (rewardId === skipRewardId) {
         try {
-          const videoData = await getVideoInfo(videoId);
+          const videoId = parseYoutubeUrl(user_input);
 
-          return { videoId, username: name, id, ...videoData };
+          if (videoId) {
+            const name = user ? user.display_name : user_name;
+            const videoData = await getVideoInfo(videoId);
+
+            return {videoId, username: name, id, ...videoData};
+          }
+
+          return null
         } catch (e) {
           console.warn(e);
 
           return null;
         }
-      } else {
-        return null;
       }
+
+      return null;
     },
     [getVideoInfo, skipRewardId],
   );

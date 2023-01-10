@@ -18,11 +18,6 @@ const socketIOSlice = createSlice({
     connectToSocketServer(state): void {
       const socket = io(getSocketIOUrl(), { auth: { token: getCookie('jwtToken') } })
 
-      socket.on('skip', (data) => {
-        console.log(data);
-        console.log('skip');
-      })
-
       state.socket = socket as any
     }
   }

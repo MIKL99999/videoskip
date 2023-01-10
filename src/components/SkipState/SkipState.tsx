@@ -1,16 +1,15 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import React, {FC, useCallback, useEffect, useMemo, useState} from 'react';
 import './SkipState.scss';
 import {Button, Checkbox, FormControlLabel, Input, LinearProgress} from '@material-ui/core';
-import { useDispatch, useSelector } from 'react-redux';
-import { SkipBotService } from '../../services/SkipBotService';
-import { VideoRequest, Vote, VoteCommand } from '../../models/video';
+import {useDispatch, useSelector} from 'react-redux';
+import {SkipBotService} from '../../services/SkipBotService';
+import {VideoRequest, Vote, VoteCommand} from '../../models/video';
 import EmoteSelect from '../EmoteSelect/EmoteSelect';
-import { EmoteData, SkipEmotes } from '../../models/common.model';
-import { getSkipEmotes, updateSkipEmotes } from '../../api/userApi';
-import { RootState } from '../../reducers';
+import {EmoteData, SkipEmotes} from '../../models/common.model';
+import {getSkipEmotes, updateSkipEmotes} from '../../api/userApi';
+import {RootState} from '../../reducers';
 import PlayerActions from '../PlayerActions/PlayerActions';
-import { SERVER_MESSAGES } from '../../constants/webSocket.constants';
-import { addAlert } from '../../reducers/notifications/notifications';
+import {addAlert} from '../../reducers/notifications/notifications';
 
 interface SkipStateProps {
   toNextVideo: () => void;
@@ -19,9 +18,14 @@ interface SkipStateProps {
   token: string | null;
 }
 
+interface SkipEvent {
+  id: string
+  displayName: string
+}
+
 const SkipState: FC<SkipStateProps> = ({ toNextVideo, currentVideo, videos, token }) => {
   const { username } = useSelector((root: RootState) => root.user);
-  const { webSocket } = useSelector((root: RootState) => root.pubSubSocket);
+  const { socket } = useSelector((root: RootState) => root.socketIO);
   const [skips, setSkips] = useState<number>(0);
   const [maxSkips, setMaxSkips] = useState<number>(7);
   const [skipService, setSkipService] = useState<SkipBotService>();
@@ -50,24 +54,18 @@ const SkipState: FC<SkipStateProps> = ({ toNextVideo, currentVideo, videos, toke
   );
 
   const handleServerSkip = useCallback(
-    ({ data }: MessageEvent) => {
-      const { type, data: vote } = JSON.parse(data);
-
-      if (type === SERVER_MESSAGES.VIDEO_REQUEST_COMMAND) {
-        skipService?.handleVote(vote, showAlert);
-      }
+    (command: VoteCommand,{ id, displayName }: SkipEvent) => {
+      skipService?.handleVote({ id, username: displayName, command }, showAlert);
     },
     [showAlert, skipService],
   );
 
-  // eslint-disable-next-line consistent-return
   useEffect(() => {
-    if (webSocket && skipService) {
-      webSocket.addEventListener('message', handleServerSkip);
-
-      return (): void => webSocket.removeEventListener('message', handleServerSkip);
+    if (socket && skipService) {
+      socket.on('skip', (data) => handleServerSkip(VoteCommand.Skip, data))
+      socket.on('safe', (data) => handleServerSkip(VoteCommand.Safe, data))
     }
-  }, [handleServerSkip, skipService, webSocket]);
+  }, [socket, skipService])
 
   useEffect(() => {
     if (username) {

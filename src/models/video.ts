@@ -18,6 +18,7 @@ export enum VoteCommand {
 }
 
 export interface Vote {
+  id: string;
   username: string;
   command: VoteCommand;
 }
