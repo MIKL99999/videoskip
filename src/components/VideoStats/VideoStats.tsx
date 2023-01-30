@@ -14,7 +14,7 @@ const VideoStats: FC<VideoStatsProps> = ({ video: { viewCount, likeCount, dislik
       <VisibilityIcon />
       <div>{viewCount}</div>
       <ThumbUpIcon className="likes-icon" />
-      <div>{`${Math.round((likeCount / (likeCount + dislikeCount)) * 100)}%`}</div>
+      <div>{likeCount}</div>
     </div>
   );
 };
